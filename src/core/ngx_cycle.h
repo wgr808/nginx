@@ -38,14 +38,23 @@ struct ngx_shm_zone_s {
 
 struct ngx_cycle_s {
     void                  ****conf_ctx;
+
+    /* memory pool */
     ngx_pool_t               *pool;
 
+    /*
+    log was used before ngx_init_cycle, there will be log and new log at the same time
+    log log to screen and new log log to error.log, after init, log will be set to new
+    log
+    */
     ngx_log_t                *log;
     ngx_log_t                 new_log;
 
     ngx_uint_t                log_use_stderr;  /* unsigned  log_use_stderr:1; */
 
+    /* files_n shows how many files it has */
     ngx_connection_t        **files;
+    /* available connections */
     ngx_connection_t         *free_connections;
     ngx_uint_t                free_connection_n;
 
@@ -53,23 +62,32 @@ struct ngx_cycle_s {
     ngx_uint_t                modules_n;
     ngx_uint_t                modules_used;    /* unsigned  modules_used:1; */
 
+    /* double linked list, store ngx_connection_t structure, indicate reusable queue*/
     ngx_queue_t               reusable_connections_queue;
     ngx_uint_t                reusable_connections_n;
 
+    /* dynamic array, store ngx_listening_t structure */
     ngx_array_t               listening;
+    /* path needed in Nginx */
     ngx_array_t               paths;
 
     ngx_array_t               config_dump;
     ngx_rbtree_t              config_dump_rbtree;
     ngx_rbtree_node_t         config_dump_sentinel;
 
+    /* single link list , store ngx_open_file_t structure, ngx_module adding files into it*/
     ngx_list_t                open_files;
+    /* single link list, store ngx_shm_zone_t structures */
     ngx_list_t                shared_memory;
 
+    /* connection numbers in current cycle*/
     ngx_uint_t                connection_n;
     ngx_uint_t                files_n;
 
+    /* all connections , connection_n shows how many connections it has*/
     ngx_connection_t         *connections;
+
+    /*all read and write events*/
     ngx_event_t              *read_events;
     ngx_event_t              *write_events;
 
